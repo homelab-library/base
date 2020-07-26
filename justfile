@@ -1,5 +1,6 @@
 version := "v1.0"
 image_name := "proctorlabs/selfhosted-base"
+base := `echo -n ${BASE:-buster}`
 arch := `echo -n ${TARGET_ARCH:-amd64}`
 
 setup:
@@ -17,19 +18,19 @@ build:
     #!/usr/bin/env bash
     set -Eeuo pipefail
     docker buildx build --platform linux/arm64,linux/amd64,linux/arm/v7 \
-        -t "{{image_name}}:{{version}}" \
-        -t "{{image_name}}:latest"  .
+        -t "{{image_name}}:{{base}}-{{version}}" \
+        -t "{{image_name}}:{{base}}" --file "dockerfile.{{base}}" .
 
 run:
     #!/usr/bin/env bash
     set -Eeuo pipefail
     docker buildx build --platform linux/{{arch}} --load \
-        -t "{{image_name}}:latest" .
-    docker run --rm -it "{{image_name}}:latest"
+        -t "{{image_name}}:{{base}}" --file "dockerfile.{{base}}" .
+    docker run --rm -it "{{image_name}}:{{base}}"
 
 publish:
     #!/usr/bin/env bash
     set -Eeuo pipefail
     docker buildx build --platform linux/arm64,linux/amd64,linux/arm/v7 \
-        -t "{{image_name}}:{{version}}" \
-        -t "{{image_name}}:latest" --push .
+        -t "{{image_name}}:{{base}}-{{version}}" \
+        -t "{{image_name}}:{{base}}" --file "dockerfile.{{base}}" --push .
