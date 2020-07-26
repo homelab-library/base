@@ -5,7 +5,7 @@ arch := `echo -n ${TARGET_ARCH:-amd64}`
 setup:
     #!/usr/bin/env bash
     set -Eeuo pipefail
-    docker buildx create --platform linux/arm64,linux/amd64,linux/arm --name cross-builder --append
+    docker buildx create --platform linux/arm64,linux/amd64,linux/arm/v7 --name cross-builder --append
     docker buildx use cross-builder
 
 enable-xbuild:
@@ -16,7 +16,7 @@ enable-xbuild:
 build:
     #!/usr/bin/env bash
     set -Eeuo pipefail
-    docker buildx build --platform linux/arm64,linux/amd64 \
+    docker buildx build --platform linux/arm64,linux/amd64,linux/arm/v7 \
         -t "{{image_name}}:{{version}}" \
         -t "{{image_name}}:latest"  .
 
@@ -30,6 +30,6 @@ run:
 publish:
     #!/usr/bin/env bash
     set -Eeuo pipefail
-    docker buildx build --platform linux/arm64,linux/amd64 \
+    docker buildx build --platform linux/arm64,linux/amd64,linux/arm/v7 \
         -t "{{image_name}}:{{version}}" \
         -t "{{image_name}}:latest" --push .
