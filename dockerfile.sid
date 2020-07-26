@@ -28,3 +28,6 @@ COPY rootfs/ /dist/
 
 FROM debian:sid-slim
 COPY --from=builder /dist/ /
+
+ENTRYPOINT [ "/init" ]
+CMD []

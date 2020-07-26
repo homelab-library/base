@@ -28,3 +28,6 @@ COPY rootfs/ /dist/
 
 FROM debian:buster-slim
 COPY --from=builder /dist/ /
+
+ENTRYPOINT [ "/init" ]
+CMD []
