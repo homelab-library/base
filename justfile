@@ -1,5 +1,5 @@
 version := "v1.0"
-image_name := "proctorlabs/base"
+image_name := "proctorlabs/selfhosted-base"
 arch := `echo -n ${TARGET_ARCH:-amd64}`
 
 setup:

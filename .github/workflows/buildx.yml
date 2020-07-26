@@ -18,11 +18,15 @@ jobs:
           buildx-version: latest
           qemu-version: latest
 
-      - name: Available platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
+      - name: Docker Login
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+        run: |-
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}"
 
       - name: Run Buildx
         run: |-
           docker buildx build \
             --platform linux/amd64,linux/arm/v7,linux/arm64 \
-            --output "type=image,push=false" .
+            -t "proctorlabs/selfhosted-base:latest" --push .
