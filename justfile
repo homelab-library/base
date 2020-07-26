@@ -26,7 +26,7 @@ run:
     set -Eeuo pipefail
     docker buildx build --platform linux/{{arch}} --load \
         -t "{{image_name}}:{{base}}" --file "dockerfile.{{base}}" .
-    docker run --rm -it "{{image_name}}:{{base}}"
+    docker run --rm -it "{{image_name}}:{{base}}" bash
 
 publish:
     #!/usr/bin/env bash

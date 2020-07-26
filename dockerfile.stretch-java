@@ -26,7 +26,7 @@ RUN wget "https://github.com/proctorlabs/templar/releases/download/v${TEMPLAR_VE
 
 COPY rootfs/ /dist/
 
-FROM openjdk:11-jre-slim-buster
+FROM openjdk:11-jre-slim-stretch
 COPY --from=builder /dist/ /
 
 ENTRYPOINT [ "/init" ]

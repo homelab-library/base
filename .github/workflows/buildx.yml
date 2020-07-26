@@ -14,7 +14,7 @@ jobs:
       matrix:
         include:
           - image_base: buster
-          - image_base: buster-java
+          - image_base: stretch-java
           - image_base: sid
           - image_base: ubuntu
 
