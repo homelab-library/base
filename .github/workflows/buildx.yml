@@ -23,7 +23,7 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
         run: |-
-          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}"
+          docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
 
       - name: Run Buildx
         run: |-
