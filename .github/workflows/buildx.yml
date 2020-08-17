@@ -7,7 +7,7 @@ on:
     - cron:  '0 22 * * *'
 
 jobs:
-  buildx:
+  base:
     name: Build Base Images
 
     strategy:
@@ -41,4 +41,4 @@ jobs:
         run: |-
           docker buildx build \
             --platform linux/amd64,linux/arm/v7,linux/arm64 \
-            -t "proctorlabs/selfhosted-base:${{ matrix.image_base }}" --file "dockerfile.${{ matrix.image_base }}" --push .
+            -t "homelabs/base:${{ matrix.image_base }}" --file "dockerfile.${{ matrix.image_base }}" --push .

@@ -1,5 +1,5 @@
 version := "v1.0"
-image_name := "proctorlabs/selfhosted-base"
+image_name := "homelabs/base"
 base := `echo -n ${BASE:-buster}`
 arch := `echo -n ${TARGET_ARCH:-amd64}`
 
