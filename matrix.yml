@@ -1,0 +1,70 @@
+---
+# required inputs
+platform: "{{ platforms | key(platform_name | require) }}"
+target: "{{ targets | key(target_name | require) }}"
+builder: "{{ builders | key(target.builder) }}"
+
+apps:
+  templar:
+    version: '0.4.1'
+    url: "https://github.com/proctorlabs/templar/releases/download/v{{ apps.templar.version }}/templar-{{ platform.templar_tag }}-unknown-linux-{{ target.lib | default('gnu') }}{{ platform.templar_suffix }}.tar.xz"
+
+  s6overlay:
+    version: '2.0.0.1'
+    url: 'https://github.com/just-containers/s6-overlay/releases/download/v{{ apps.s6overlay.version }}/s6-overlay-{{ platform.s6_tag }}.tar.gz'
+
+platforms:
+  linux/amd64:
+    s6_tag: 'amd64'
+    templar_tag: 'x86_64'
+    templar_suffix: ''
+
+  linux/arm/v7:
+    s6_tag: 'armhf'
+    templar_tag: 'armv7'
+    templar_suffix: 'eabihf'
+
+  linux/arm64:
+    s6_tag: 'aarch64'
+    templar_tag: 'aarch64'
+    templar_suffix: ''
+
+builders:
+  gnu:
+    image: 'buildpack-deps:focal'
+    script: >-
+      mkdir -p /dist &&
+      curl -sL "{{ apps.s6overlay.url }}" | tar xz -C /dist &&
+      curl -sL "{{ apps.templar.url }}" | tar xJ -C /dist/usr/bin &&
+      chmod +x "/dist/usr/bin/templar"
+
+targets:
+  buster:
+    builder: gnu
+    image: debian:buster-slim
+    fix_symlink: false
+  sid:
+    builder: gnu
+    image: debian:sid-slim
+    fix_symlink: false
+  focal:
+    builder: gnu
+    image: ubuntu:focal
+    fix_symlink: true
+  python37:
+    builder: gnu
+    image: python:3.7-slim-buster
+    fix_symlink: false
+  python38:
+    builder: gnu
+    image: python:3.8-slim-buster
+    fix_symlink: false
+  stretch-java:
+    builder: gnu
+    image: openjdk:11-jre-slim-stretch
+    fix_symlink: false
+  alpine:
+    builder: gnu
+    image: alpine:3.12
+    fix_symlink: false
+    lib: musl

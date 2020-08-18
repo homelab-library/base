@@ -9,17 +9,8 @@ on:
 jobs:
   base:
     name: Build Base Images
-
-    strategy:
-      matrix:
-        include:
-          - image_base: buster
-          - image_base: buster-python
-          - image_base: stretch-java
-          - image_base: sid
-          - image_base: ubuntu
-
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -38,8 +29,6 @@ jobs:
         run: |-
           docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
 
-      - name: Run Buildx
+      - name: Run build scripts and publish
         run: |-
-          docker buildx build \
-            --platform linux/amd64,linux/arm/v7,linux/arm64 \
-            -t "homelabs/base:${{ matrix.image_base }}" --file "dockerfile.${{ matrix.image_base }}" --push .
+          ./build.sh -P
