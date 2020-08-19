@@ -6,11 +6,11 @@ builder: "{{ builders | key(target.builder) }}"
 apps:
   templar:
     version: '0.4.1'
-    url: "https://github.com/proctorlabs/templar/releases/download/v{{ apps.templar.version }}/templar-{{ p.value.templar_tag }}-unknown-linux-{{ target.lib | default('gnu') }}{{ p.value.templar_suffix }}.tar.xz"
+    url: "https://github.com/proctorlabs/templar/releases/download/v{{ apps.templar.version }}/templar-${TEMPLAR_TAG}-unknown-linux-{{ target.lib | default('gnu') }}${TEMPLAR_SUFFIX}.tar.xz"
 
   s6overlay:
     version: '2.0.0.1'
-    url: 'https://github.com/just-containers/s6-overlay/releases/download/v{{ apps.s6overlay.version }}/s6-overlay-{{ p.value.s6_tag }}.tar.gz'
+    url: 'https://github.com/just-containers/s6-overlay/releases/download/v{{ apps.s6overlay.version }}/s6-overlay-${S6_TAG}.tar.gz'
 
 platforms:
   linux/amd64:
@@ -32,10 +32,17 @@ builders:
   gnu:
     image: 'buildpack-deps:focal'
     script: >-
-      mkdir -p /dist &&
-      curl -sL "{{ apps.s6overlay.url }}" | tar xz -C /dist &&
-      curl -sL "{{ apps.templar.url }}" | tar xJ -C /dist/usr/bin &&
-      chmod +x "/dist/usr/bin/templar"
+      {% for p in platforms %}
+      if [ "${TARGETPLATFORM}" = "{{p.key}}" ]; then
+      S6_TAG="{{ p.value.s6_tag }}" ;
+      TEMPLAR_TAG="{{p.value.templar_tag}}" ;
+      TEMPLAR_SUFFIX="{{p.value.templar_suffix}}" ;
+      fi ;
+      {% end for %}
+      mkdir -p /dist ;
+      curl -sL "{{ apps.s6overlay.url }}" | tar xz -C /dist ;
+      curl -sL "{{ apps.templar.url }}" | tar xJ -C /dist/usr/bin ;
+      chmod +x "/dist/usr/bin/templar" ;
 
 targets:
   buster:
