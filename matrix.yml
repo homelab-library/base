@@ -1,17 +1,16 @@
 ---
 # required inputs
-platform: "{{ platforms | key(platform_name | require) }}"
 target: "{{ targets | key(target_name | require) }}"
 builder: "{{ builders | key(target.builder) }}"
 
 apps:
   templar:
     version: '0.4.1'
-    url: "https://github.com/proctorlabs/templar/releases/download/v{{ apps.templar.version }}/templar-{{ platform.templar_tag }}-unknown-linux-{{ target.lib | default('gnu') }}{{ platform.templar_suffix }}.tar.xz"
+    url: "https://github.com/proctorlabs/templar/releases/download/v{{ apps.templar.version }}/templar-{{ p.value.templar_tag }}-unknown-linux-{{ target.lib | default('gnu') }}{{ p.value.templar_suffix }}.tar.xz"
 
   s6overlay:
     version: '2.0.0.1'
-    url: 'https://github.com/just-containers/s6-overlay/releases/download/v{{ apps.s6overlay.version }}/s6-overlay-{{ platform.s6_tag }}.tar.gz'
+    url: 'https://github.com/just-containers/s6-overlay/releases/download/v{{ apps.s6overlay.version }}/s6-overlay-{{ p.value.s6_tag }}.tar.gz'
 
 platforms:
   linux/amd64:

@@ -30,6 +30,7 @@ done
 PUBLISH="${PUBLISH:-0}"
 PLATFORM="${PLATFORM:-linux/amd64 linux/arm/v7 linux/arm64}"
 TARGET="${TARGET:-$(echo -n '{% for t in targets %}{{ t.key }} {% end for %}' | .bin/templar -i matrix.yml)}"
+TIMESTAMP="$(date +"%Y%m%d-%H%M")"
 
 SAVEIFS=$IFS
 IFS=$' '
@@ -41,14 +42,22 @@ buildx() {
     target="${1}"
     platform="${2}"
     platform_normalized="${platform//\//_}"
-    outfile="out/dockerfile.${target}_${platform_normalized}"
+    outfile="out/dockerfile.${target}"
     .bin/templar -d "matrix.yml" -s target_name="${target}" -s platform_name="${platform}" -t "dockerfile.tpl" -o "${outfile}"
-    docker buildx build --platform "${platform}" --progress plain -t "${target}_${platform_normalized}" -f "${outfile}" --load .
-    if [[ $PUBLISH == "1" ]]; then
-        docker buildx build --platform "${platform}" --progress plain \
-            -t "homelabs/base:${target}" -t "homelabs/base:${target}-$(date +"%Y%m%d-%H%M")" \
-            --file "${outfile}" --push .
+    docker buildx build --platform "${platform}" --progress plain \
+        -t "${target}_${platform_normalized}" \
+        -t "homelabs/base:${target}" \
+        -t "homelabs/base:${target}-${TIMESTAMP}" \
+            -f "${outfile}" --load .
+}
 
+publish() {
+    platform="linux/amd64 linux/arm/v7 linux/arm64"
+    target="$1"
+    if [[ $PUBLISH == "1" ]]; then
+        outfile="out/dockerfile.${target}"
+        docker buildx build --platform "linux/amd64,linux/arm/v7,linux/arm64" --progress plain \
+            -t "homelabs/base:${target}" -t "homelabs/base:${target}-${TIMESTAMP}" --file "${outfile}" --push .
     fi
 }
 
@@ -56,6 +65,12 @@ for t in "${TARGETS[@]}"; do
     for p in "${PLATFORMS[@]}"; do
         buildx "$t" "$p" &
     done
+done
+
+wait
+
+for t in "${TARGETS[@]}"; do
+    publish "$t" &
 done
 
 wait
