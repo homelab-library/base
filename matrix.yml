@@ -69,6 +69,14 @@ targets:
     builder: gnu
     image: openjdk:11-jre-slim-stretch
     fix_symlink: false
+  java11:
+    builder: gnu
+    image: adoptopenjdk:11-jre-hotspot-bionic
+    fix_symlink: false
+  java8:
+    builder: gnu
+    image: adoptopenjdk:8-jre-hotspot-bionic
+    fix_symlink: false
   alpine:
     builder: gnu
     image: alpine:3.12
