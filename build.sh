@@ -2,6 +2,7 @@
 set -Eeuo pipefail
 
 TEMPLAR_URL="https://github.com/proctorlabs/templar/releases/download/v0.4.1/templar-x86_64-unknown-linux-gnu.tar.xz"
+REGISTRY="ghcr.io/homelab-library/base"
 
 mkdir -p out .bin
 if [[ ! -f .bin/templar ]]; then
@@ -46,8 +47,8 @@ buildx() {
     .bin/templar -d "matrix.yml" -s target_name="${target}" -s platform_name="${platform}" -t "dockerfile.tpl" -o "${outfile}"
     docker buildx build --platform "${platform}" --progress plain \
         -t "${target}_${platform_normalized}" \
-        -t "homelabs/base:${target}" \
-        -t "homelabs/base:${target}-${TIMESTAMP}" \
+        -t "${REGISTRY}:${target}" \
+        -t "${REGISTRY}:${target}-${TIMESTAMP}" \
             -f "${outfile}" --load .
 }
 
@@ -57,7 +58,7 @@ publish() {
     if [[ $PUBLISH == "1" ]]; then
         outfile="out/dockerfile.${target}"
         docker buildx build --platform "linux/amd64,linux/arm/v7,linux/arm64" --progress plain \
-            -t "homelabs/base:${target}" -t "homelabs/base:${target}-${TIMESTAMP}" --file "${outfile}" --push .
+            -t "${REGISTRY}:${target}" -t "${REGISTRY}:${target}-${TIMESTAMP}" --file "${outfile}" --push .
     fi
 }
 
