@@ -1,0 +1,10 @@
+---
+name: base
+display_name: Base Image
+disclaimer: ~
+description: |-
+  These builds are the base images that are shared by a majority of the
+  homelab-library projects.
+
+autogen:
+  image.yml: false
