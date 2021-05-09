@@ -1,6 +1,6 @@
 ---
 name: base
-display_name: Base Image
+display_name: Base
 disclaimer: ~
 description: |-
   These builds are the base images that are shared by a majority of the
